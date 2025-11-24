@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.dao.UserMapper">
+    <!-- 查询所有用户 -->
+    <select id="findAll" resultType="org.example.model.User">
+        SELECT * FROM user
+    </select>
+
+    <!-- 根据 ID 查询用户 -->
+    <select id="findById" resultType="org.example.model.User">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+
+    <!-- 保存用户（通用保存，可用于非注册场景） -->
+    <insert id="save" parameterType="org.example.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (name, age, sex, username, password, user_type, phone, openid)
+        VALUES (#{name}, #{age}, #{sex}, #{username}, #{password}, #{userType}, #{phone}, #{openid})
+    </insert>
+
+    <!-- 注册用户（新增：与UserMapper接口的register方法对应） -->
+    <insert id="register" parameterType="org.example.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (name, age, sex, username, password, user_type, phone, openid)
+        VALUES (#{name}, #{age}, #{sex}, #{username}, #{password}, #{userType}, #{phone}, #{openid})
+    </insert>
+
+    <!-- 更新用户信息 -->
+    <update id="update" parameterType="org.example.model.User">
+        UPDATE user
+        SET name = #{name},
+        age = #{age},
+        sex = #{sex},
+        user_type = #{userType},
+        phone = #{phone}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据 ID 删除用户 -->
+    <delete id="delete">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="findByUsername" parameterType="string" resultType="org.example.model.User">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <!-- 检查用户名是否已存在 -->
+    <select id="checkUsernameExists" parameterType="string" resultType="int">
+        <!-- 优化：直接传用户名字符串，无需用User对象 -->
+        SELECT COUNT(*) FROM user WHERE username = #{username}
+    </select>
+
+    <!-- 根据条件模糊查询用户 -->
+    <select id="findUsersByCondition" resultType="org.example.model.User">
+        SELECT id,name,age,sex,username,password,phone,user_type
+        FROM user
+        <where>
+            <if test="condition != null and condition != ''">
+                (name like concat('%', #{condition}, '%')
+                or username like concat('%', #{condition}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询所有用户类型 -->
+    <select id="getAllUserTypes" resultType="string">
+        SELECT DISTINCT user_type
+        FROM user
+        WHERE user_type IS NOT NULL
+    </select>
+
+    <!-- 结果映射（处理字段映射）-->
+    <resultMap id="userResultMap" type="org.example.model.User">
+        <result column="user_type" property="userType"/>
+    </resultMap>
+
+    <!-- 通过 openid 查询用户 -->
+    <select id="findByOpenid" parameterType="string" resultType="org.example.model.User">
+        SELECT * FROM user WHERE openid = #{openid}
+    </select>
+
+</mapper>

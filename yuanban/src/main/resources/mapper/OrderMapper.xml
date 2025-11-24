@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.dao.OrderMapper">
+
+    <resultMap id="OrderResultMap" type="org.example.model.Order">
+        <id column="order_id" property="orderId"/>
+        <result column="user_id" property="userId"/>
+        <result column="order_date" property="orderDate"/>
+        <result column="order_amount" property="orderAmount"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="attendant_id" property="attendantId"/>
+        <result column="address" property="address"/>
+        <result column="hospital" property="hospital"/>
+        <result column="comment" property="comment"/>
+        <result column="star_rating" property="starRating"/>
+        <result column="appointment_time" property="appointmentTime"/>
+        <result column="appointment_status" property="appointmentStatus"/>
+        <!-- 删除attendant_order_status映射 -->
+        <result column="clinic_type" property="clinicType"/>
+        <result column="payment_status" property="paymentStatus"/>
+        <result column="service_content" property="serviceContent"/>
+        <result column="verification_code" property="verificationCode"/>
+        <result column="electronic_medical_record" property="electronicMedicalRecord"/>
+        <result column="user_phone" property="userPhone"/>
+        <result column="attendant_phone" property="attendantPhone"/>
+        <result column="special_requirements" property="specialRequirements"/>
+        <!-- 为selectedOptions添加类型处理器 -->
+        <result column="selected_options" property="selectedOptions"
+                typeHandler="org.example.handler.JsonListTypeHandler"/>
+        <result column="custom_requirement" property="customRequirement"/>
+        <result column="consultation_duration" property="consultationDuration"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="deposit_amount" property="depositAmount"/>
+        <result column="order_no" property="orderNo"/>  <!-- 订单号映射，确保查询返回 -->
+        <result column="end_time" property="endTime"/>  <!-- 结束时间映射 -->
+    </resultMap>
+
+    <insert id="insert" parameterType="org.example.model.Order" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO `order` (
+        order_no,  -- 必须包含，后端自动赋值
+        user_id, order_date, end_time,  -- end_time后端计算后传入
+        order_amount, patient_id, attendant_id,
+        address, hospital, comment, star_rating, appointment_time,
+        appointment_status, clinic_type, payment_status,
+        service_content, verification_code, electronic_medical_record,
+        user_phone, attendant_phone, special_requirements,
+        selected_options, custom_requirement,
+        consultation_duration, unit_price, deposit_amount
+        )
+        VALUES (
+        #{orderNo},  -- 绑定后端生成的订单号
+        #{userId}, #{orderDate}, #{endTime},  -- endTime后端计算
+        #{orderAmount}, #{patientId}, #{attendantId},
+        #{address}, #{hospital}, #{comment}, #{starRating}, #{appointmentTime},
+        #{appointmentStatus}, #{clinicType}, #{paymentStatus},
+        #{serviceContent}, #{verificationCode}, #{electronicMedicalRecord},
+        #{userPhone}, #{attendantPhone}, #{specialRequirements},
+        #{selectedOptions, typeHandler=org.example.handler.JsonListTypeHandler}, #{customRequirement},
+        #{consultationDuration}, #{unitPrice}, #{depositAmount}
+        )
+    </insert>
+
+    <insert id="insertAppointmentOrder" parameterType="org.example.model.Order">
+        INSERT INTO `order` (
+        order_no,  -- 后端自动生成
+        user_id, order_date, end_time,  -- end_time后端计算
+        order_amount, patient_id, attendant_id,
+        address, hospital, appointment_time, appointment_status,
+        clinic_type, payment_status,
+        service_content, verification_code, special_requirements,
+        selected_options, custom_requirement
+        )
+        VALUES (
+        #{orderNo},  -- 绑定后端生成的订单号
+        #{userId}, #{orderDate}, #{endTime},  -- endTime后端计算
+        #{orderAmount}, #{patientId}, #{attendantId},
+        #{address}, #{hospital}, #{appointmentTime},
+        #{appointmentStatus}, #{clinicType}, #{paymentStatus},
+        #{serviceContent}, #{verificationCode}, #{specialRequirements},
+        #{selectedOptions, typeHandler=org.example.handler.JsonListTypeHandler}, #{customRequirement}
+        )
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="org.example.model.Order">
+        UPDATE `order`
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="orderDate != null">order_date = #{orderDate},</if>
+            <if test="orderAmount != null">order_amount = #{orderAmount},</if>
+            <if test="patientId != null">patient_id = #{patientId},</if>
+            <if test="attendantId != null">attendant_id = #{attendantId},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="hospital != null">hospital = #{hospital},</if>
+            <if test="comment != null">comment = #{comment},</if>
+            <if test="starRating != null">star_rating = #{starRating},</if>
+            <if test="appointmentTime != null">appointment_time = #{appointmentTime},</if>
+            <if test="appointmentStatus != null">appointment_status = #{appointmentStatus},</if>
+            <!-- 删除attendant_order_status的更新条件 -->
+            <if test="clinicType != null">clinic_type = #{clinicType},</if>
+            <if test="paymentStatus != null">payment_status = #{paymentStatus},</if>
+            <if test="serviceContent != null">service_content = #{serviceContent},</if>
+            <if test="verificationCode != null">verification_code = #{verificationCode},</if>
+            <if test="electronicMedicalRecord != null">electronic_medical_record = #{electronicMedicalRecord},</if>
+            <if test="userPhone != null">user_phone = #{userPhone},</if>
+            <if test="attendantPhone != null">attendant_phone = #{attendantPhone},</if>
+            <if test="specialRequirements != null">special_requirements = #{specialRequirements},</if>
+            <!-- 更新时添加类型处理器 -->
+            <if test="selectedOptions != null">selected_options = #{selectedOptions, typeHandler=org.example.handler.JsonListTypeHandler},</if>
+            <if test="customRequirement != null">custom_requirement = #{customRequirement},</if>
+            <if test="consultationDuration != null">consultation_duration = #{consultationDuration},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="depositAmount != null">deposit_amount = #{depositAmount},</if>
+
+        </set>
+        WHERE order_id = #{orderId}
+    </update>
+
+
+    <select id="selectByPrimaryKey" resultMap="OrderResultMap">
+        SELECT
+        order_id, user_id, order_date,
+        order_amount, patient_id, attendant_id,
+        address, hospital, comment, star_rating, appointment_time, appointment_status,
+        clinic_type, payment_status, service_content,  <!-- 删除attendant_order_status -->
+        verification_code, electronic_medical_record,
+        user_phone, attendant_phone, special_requirements,
+        selected_options, custom_requirement,
+        consultation_duration, unit_price, deposit_amount
+        FROM `order`
+        WHERE order_id = #{id}
+    </select>
+
+    <select id="findAllOrders" resultMap="OrderResultMap">
+        SELECT * FROM `order`
+    </select>
+
+
+    <select id="findOrdersByUserId" parameterType="int" resultMap="OrderResultMap">
+        SELECT
+        order_id, user_id, order_date,
+        order_amount, patient_id, attendant_id,
+        address, hospital, comment, star_rating, appointment_time, appointment_status,
+        clinic_type, payment_status, service_content,  <!-- 删除attendant_order_status -->
+        verification_code, electronic_medical_record,
+        user_phone, attendant_phone, special_requirements,
+        selected_options, custom_requirement,
+        consultation_duration, unit_price, deposit_amount
+        FROM `order`
+        WHERE user_id = #{userId}
+    </select>
+
+
+    <delete id="deleteOrder" parameterType="int">
+        DELETE FROM `order` WHERE order_id = #{orderId}
+    </delete>
+
+    <update id="updateOrderEvaluation" parameterType="org.example.model.Order">
+        UPDATE `order`
+        SET comment = #{comment}, star_rating = #{starRating}
+        WHERE order_id = #{orderId}
+    </update>
+
+    <update id="updateAttendantStarRating" parameterType="org.example.model.Order">
+        UPDATE `order`
+        SET star_rating = #{starRating}
+        WHERE order_id = #{orderId}
+    </update>
+
+    <select id="getAllClinicTypes" resultType="java.lang.Integer">
+        SELECT DISTINCT clinic_type FROM `order`
+    </select>
+
+
+
+</mapper>

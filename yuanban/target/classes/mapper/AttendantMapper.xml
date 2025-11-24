@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.dao.AttendantMapper">
+
+    <!-- 注册陪诊师（包含所有字段） -->
+    <insert id="register" parameterType="Attendant" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO attendant
+        (name, age, sex, username, password, phone, certificate, status, introduction)
+        VALUES
+        (#{name}, #{age}, #{sex}, #{username}, #{password}, #{phone}, #{certificate}, #{status}, #{introduction})
+    </insert>
+
+    <!-- 根据用户名查询（包含所有字段） -->
+    <select id="findByUsername" resultType="Attendant">
+        SELECT
+        id,
+        name,
+        age,
+        sex,
+        username,
+        password,
+        phone,
+        certificate,
+        status,
+        introduction
+        FROM attendant
+        WHERE username = #{username}
+    </select>
+
+    <!-- 根据ID查询（包含所有字段） -->
+    <select id="findById" resultType="Attendant">
+        SELECT
+        id,
+        name,
+        age,
+        sex,
+        username,
+        password,
+        phone,
+        certificate,
+        status,
+        introduction
+        FROM attendant
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询所有陪诊师（包含所有字段） -->
+    <select id="findAll" resultType="Attendant">
+        SELECT
+        id,
+        name,
+        age,
+        sex,
+        username,
+        password,
+        phone,
+        certificate,
+        status,
+        introduction
+        FROM attendant
+    </select>
+
+    <!-- 更新陪诊师信息（动态SQL，仅更新有值的字段） -->
+    <update id="update" parameterType="Attendant">
+        UPDATE attendant
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="certificate != null">certificate = #{certificate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="introduction != null">introduction = #{introduction}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除陪诊师 -->
+    <delete id="delete">
+        DELETE FROM attendant WHERE id = #{id}
+    </delete>
+
+    <!-- 检查用户名是否存在 -->
+    <select id="checkUsernameExists" resultType="int">
+        SELECT COUNT(*) FROM attendant WHERE username = #{username}
+    </select>
+
+    <!-- 注意：这里的user_id可能是外键关联字段，需要确认数据库表结构 -->
+    <select id="findByUserId" resultType="Attendant">
+        SELECT
+        id,
+        name,
+        age,
+        sex,
+        username,
+        password,
+        phone,
+        certificate,
+        status,
+        introduction
+        FROM attendant
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>
